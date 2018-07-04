@@ -1,4 +1,4 @@
-var output = require('@dpack/logger/result')
+var result = require('@dpack/logger/result')
 var pretty = require('prettier-bytes')
 var chalk = require('chalk')
 var importUI = require('./components/import-progress')
@@ -9,9 +9,9 @@ module.exports = createUI
 
 function createUI (state) {
   if (!state.dpack) {
-    return output`
+    return result(`
     Creating a dPack! Add information to your dpack.json file:
-  `
+  `)
   }
 
   var dpack = state.dpack
@@ -42,10 +42,10 @@ function createUI (state) {
     progressView = 'Not importing files.'
   }
 
-  return output`
+  return result(`
     ${title}
 
     ${progressView}
     ${state.exiting ? exitMsg : chalk.dim('Ctrl+C to Exit')}
-  `
+  `)
 }

@@ -1,4 +1,4 @@
-var output = require('@dpack/logger/result')
+var result = require('@dpack/logger/result')
 var pretty = require('prettier-bytes')
 var makeBar = require('progress-string')
 
@@ -27,9 +27,9 @@ function peersUI (state) {
       }
     })
     var theBar = progress ? bar(progress) : '' // progress bar todo
-    return output`
+    return result(`
       [${i}] ${peer.closed ? 'CLOSED' : peer.type}: ${peer.host}:${peer.port} ${pretty(peer.speed)}/s
       ${peer.error ? peer.error : theBar}
-    `
+    `)
   }
 }

@@ -1,4 +1,4 @@
-var output = require('@dpack/logger/result')
+var result = require('@dpack/logger/result')
 var pretty = require('prettier-bytes')
 var bar = require('progress-string')
 var cliTruncate = require('cli-truncate')
@@ -13,11 +13,11 @@ function importUI (state) {
   if (importState.count && !importState.count.done) {
     // dry run in progress
     if (!importState.count.files) return 'Checking for file updates...'
-    return output`
+    return result(`
       Metadata created for ${importState.putDone.files} of ${importState.count.files} files ${indexSpeed}
       (Calculating file count...)
       ${fileImport(importState.fileImport)}
-    `
+    `)
   } else if (importState.putDone.files >= importState.count.files) {
     // Initial import done
     if (!watch) return 'Vault metadata updated for all files.'
@@ -32,19 +32,19 @@ function importUI (state) {
     }
   })
 
-  return output`
+  return result(`
     Creating metadata for ${importState.count.files} files ${indexSpeed}
     ${totalBar(importState.importedBytes)}
     ${fileImport(importState.fileImport)}
-  `
+  `)
 
   function liveImport () {
     // Live import
     var imports = importState.liveImports.slice(1).slice(-7)
-    return output`
+    return result(`
       Watching for file updates
       ${imports.reverse().map(function (file) { return fileImport(file) }).join('\n')}
-    `
+    `)
   }
 
   function fileImport (file) {
@@ -58,8 +58,8 @@ function importUI (state) {
     // >500 mb show progress
     if (total < 5e8 || !file.progress) size = `(${pretty(total)})`
     else size = `(${pretty(file.progress)} / ${pretty(total)})`
-    return output`
+    return result(`
       ADD: ${cliTruncate(name, process.stdout.columns - 7 - size.length, {position: 'start'})} ${size}
-    `
+    `)
   }
 }

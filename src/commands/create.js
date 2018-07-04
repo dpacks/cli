@@ -34,19 +34,15 @@ function create (opts) {
   }
 
   var welcome = `Welcome to ${chalk.green(`dPack`)} Command CLI!`
-  var intro = result`
+  var intro = result(`
     You can turn any folder on your computer into a dPack.
     A dPack is a folder with some magic.
-
     Your dPack is ready!
     We will walk you through creating a 'dpack.json' file.
     (You can skip dpack.json and get started now.)
-
-    Learn more about dpack.json: ${chalk.blue(`https://doc.dpack.io/metadata`)}
-
+    Learn more about dpack.json: ${chalk.blue(`http://docs.dpack.io/metadata`)}
     ${chalk.dim('Ctrl+C to exit at any time')}
-
-  `
+  `)
   var outro
 
   // Force certain options
@@ -54,19 +50,16 @@ function create (opts) {
 
   console.log(welcome)
   DPack(opts.dir, opts, function (err, dpack) {
-    if (err && err.name === 'ExistsError') return exitErr('\nVault already exists.\nYou can use `dpack dweb` to update.')
+    if (err && err.name === 'ExistsError') return exitErr('\nVault already exists.\nYou can use `dpack pull` to update.')
     if (err) return exitErr(err)
 
-    outro = result`
-
+    outro = result(`
       Created empty dPack in ${dpack.path}/.dpack
-
       Now you can add files and distribute:
-      * Run ${chalk.green(`dpack dist`)} to create metadata and dweb.
-      * Copy the unique dPack link and securely distribute it.
-
+      * Run ${chalk.green(`dpack dist`)} to create metadata and pull.
+      * Copy the unique dWeb link and securely share it.
       ${chalk.blue(`dweb://${dpack.key.toString('hex')}`)}
-    `
+    `)
 
     if (opts.yes) return done()
 

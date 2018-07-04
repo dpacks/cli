@@ -1,4 +1,4 @@
-var output = require('@dpack/logger/result')
+var result = require('@dpack/logger/result')
 var bar = require('progress-string')
 
 module.exports = networkUI
@@ -30,10 +30,10 @@ function networkUI (state) {
     return '' // no metadata yet
   }
 
-  return output`
+  return result(`
     ${title}
     ${downBar(stats.downloaded)}
-  `
+  `)
 
   function makeBar () {
     var total = stats.length

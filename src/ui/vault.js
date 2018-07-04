@@ -1,5 +1,5 @@
 var path = require('path')
-var output = require('@dpack/logger/result')
+var result = require('@dpack/logger/result')
 var pretty = require('prettier-bytes')
 var chalk = require('chalk')
 var downloadUI = require('./components/download')
@@ -45,14 +45,13 @@ function vaultUI (state) {
     }
   }
 
-  return output`
+  return result(`
     ${version(pkg.version)}
     ${title}
     ${state.joinNetwork ? '\n' + networkUI(state) : ''}
-
     ${progressView}
     ${state.opts.sources ? sourcesUI(state) : ''}
     ${state.warnings ? warningsUI(state) : ''}
     ${state.exiting ? 'Exiting the dPack program...' : chalk.dim('Ctrl+C to Exit')}
-  `
+  `)
 }

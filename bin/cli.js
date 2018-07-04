@@ -36,12 +36,12 @@ var config = {
   defaults: [
     { name: 'dir', abbr: 'd', help: 'set the directory for dPack' },
     { name: 'logspeed', default: 400 },
-    { name: 'port', default: 3282, help: 'port to use for connections' },
+    { name: 'port', default: 6620, help: 'port to use for connections' },
     { name: 'utp', default: true, boolean: true, help: 'use utp for revelation' },
     { name: 'http', help: 'serve dPack over http (default port: 8080)' },
     { name: 'debug', default: !!process.env.DEBUG && !debug.enabled, boolean: true },
     { name: 'quiet', default: debug.enabled, boolean: true }, // use quiet for dPack CLI debugging
-    { name: 'thin', default: false, boolean: true, help: 'download only requested data' },
+    { name: 'sparse', default: false, boolean: true, help: 'download only requested data' },
     { name: 'up', help: 'throttle upload bandwidth (1024, 1kb, 2mb, etc.)' },
     { name: 'down', help: 'throttle download bandwidth (1024, 1kb, 2mb, etc.)' }
   ],
