@@ -1,6 +1,6 @@
 {
   "name": "@dpack/cli",
-  "version": "0.1.9",
+  "version": "0.2.0",
   "description": "dPack is a distributed and decentralized package manager for the dWeb. Easily distribute dPacks across the Distributed Web (dWeb) while maintaining complete version control.",
   "contributors": [
     "Jared Rice Sr. <jared@dwebs.io>",
@@ -49,7 +49,7 @@
     "@ddatabase/core": "*",
     "@dpacks/api": "dpacks/repository-api#master",
     "@dwcore/rem": "*",
-    "@flockcore/revelation": "flockcore/revelation#master",
+    "@flockcore/revelation": "*",
     "cross-zip-cli": "^1.0.0",
     "dependency-check": "^3.0.0",
     "mkdirp": "^0.5.1",
