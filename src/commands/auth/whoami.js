@@ -16,7 +16,7 @@ module.exports = {
 }
 
 function whoami (opts) {
-  var output = require('@dpack/logger/result')
+  var output = require('@dpack/replogger/output')
   var chalk = require('chalk')
   var Repository = require('../../repository')
 
@@ -28,7 +28,7 @@ function whoami (opts) {
     if (!opts.server) return exitErr('No login information found.')
     return exitErr('No login information found for that server.')
   }
-  console.log(output`
+  console.log(`
     Your active dPack Repository information:
 
     ---

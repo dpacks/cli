@@ -1,8 +1,8 @@
 Arguments: 
-  /Users/thejoker/.nvm/versions/node/v10.5.0/bin/node /usr/local/bin/yarn
+  /Users/thejoker/.nvm/versions/node/v10.5.0/bin/node /usr/local/bin/yarn publish
 
 PATH: 
-  /usr/local/opt/openssl/bin:/usr/local/opt/postgresql@9.6/bin:/usr/local/opt/openssl/bin:/Users/thejoker/.nvm/versions/node/v10.5.0/bin:/usr/local/opt/postgresql@9.6/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Xamarin Workbooks.app/Contents/SharedSupport/path-bin:/Users/thejoker/.rvm/bin:/Users/thejoker/.rvm/bin:/Users/thejoker/.rvm/bin
+  /usr/local/opt/openssl/bin:/Users/thejoker/.nvm/versions/node/v10.5.0/bin:/usr/local/opt/postgresql@9.6/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/share/dotnet:/Library/Frameworks/Mono.framework/Versions/Current/Commands:/Applications/Xamarin Workbooks.app/Contents/SharedSupport/path-bin:/Users/thejoker/.rvm/bin:/Users/thejoker/.rvm/bin
 
 Yarn version: 
   1.5.1
@@ -16,7 +16,7 @@ Platform:
 npm manifest: 
   {
     "name": "@dpack/cli",
-    "version": "0.1.9",
+    "version": "0.2.1",
     "description": "dPack is a distributed and decentralized package manager for the dWeb. Easily distribute dPacks across the Distributed Web (dWeb) while maintaining complete version control.",
     "contributors": [
       "Jared Rice Sr. <jared@dwebs.io>",
@@ -39,6 +39,7 @@ npm manifest:
     },
     "dependencies": {
       "@dpack/core": "dpacks/core#master",
+      "@dpack/dwdiffy": "*",
       "@dpack/drsatoshi": "dpacks/drsatoshi#master",
       "@dpack/feed": "dpacks/feed#master",
       "@dpack/logger": "dpacks/logger#master",
@@ -65,7 +66,7 @@ npm manifest:
       "@ddatabase/core": "*",
       "@dpacks/api": "dpacks/repository-api#master",
       "@dwcore/rem": "*",
-      "@flockcore/revelation": "flockcore/revelation#master",
+      "@flockcore/revelation": "*",
       "cross-zip-cli": "^1.0.0",
       "dependency-check": "^3.0.0",
       "mkdirp": "^0.5.1",
@@ -101,14 +102,14 @@ Lockfile:
   No lockfile
 
 Trace: 
-  Error: Workspaces can only be enabled in private projects.
-      at new MessageError (/usr/local/lib/node_modules/yarn/lib/cli.js:186:110)
-      at Config.getWorkspaces (/usr/local/lib/node_modules/yarn/lib/cli.js:40341:15)
-      at Config.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:40229:21)
-      at Generator.next (<anonymous>)
-      at step (/usr/local/lib/node_modules/yarn/lib/cli.js:98:30)
-      at /usr/local/lib/node_modules/yarn/lib/cli.js:116:14
-      at new Promise (<anonymous>)
-      at new F (/usr/local/lib/node_modules/yarn/lib/cli.js:23451:28)
-      at Config.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:95:12)
-      at Config.resolveWorkspaces (/usr/local/lib/node_modules/yarn/lib/cli.js:40296:21)
+  Error: https://registry.npmjs.org/@dpack%2fcli: You cannot publish over the previously published versions: 0.2.1.
+      at Request.params.callback [as _callback] (/usr/local/lib/node_modules/yarn/lib/cli.js:65019:18)
+      at Request.self.callback (/usr/local/lib/node_modules/yarn/lib/cli.js:132430:22)
+      at Request.emit (events.js:182:13)
+      at Request.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:133413:10)
+      at Request.emit (events.js:182:13)
+      at Gunzip.<anonymous> (/usr/local/lib/node_modules/yarn/lib/cli.js:133333:12)
+      at Object.onceWrapper (events.js:273:13)
+      at Gunzip.emit (events.js:187:15)
+      at endReadableNT (_stream_readable.js:1081:12)
+      at process._tickCallback (internal/process/next_tick.js:63:19)

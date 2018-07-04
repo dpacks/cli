@@ -18,16 +18,16 @@ module.exports = {
 
 function login (opts) {
   var prompt = require('prompt')
-  var output = require('@dpack/logger/result')
+  var output = require('@dpack/replogger/output')
   var chalk = require('chalk')
   var Repository = require('../../repository')
 
   if (opts._[0]) opts.server = opts._[0]
-  var welcome = output`
+  var welcome = output(`
     Welcome to ${chalk.green(`dPack`)} Command CLI!
     Login to publish your dPacks to the dWeb.
 
-  `
+  `)
   console.log(welcome)
 
   var schema = {
@@ -70,7 +70,7 @@ function login (opts) {
       if (err && err.message) return exitErr(err.message)
       else if (err) return exitErr(err.toString())
 
-      console.log(output`
+      console.log(`
         Logged you in to ${chalk.green(opts.server)}!
 
         Now you can publish dPacks and distribute to the dWeb:
