@@ -1,6 +1,6 @@
 {
   "name": "@dpack/cli",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "dPack is a distributed and decentralized package manager for the dWeb. Easily distribute dPacks across the Distributed Web (dWeb) while maintaining complete version control.",
   "contributors": [
     "Jared Rice Sr. <jared@dwebs.io>",
