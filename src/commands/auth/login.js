@@ -70,13 +70,13 @@ function login (opts) {
       if (err && err.message) return exitErr(err.message)
       else if (err) return exitErr(err.toString())
 
-      console.log(`
+      console.log(output(`
         Logged you in to ${chalk.green(opts.server)}!
 
         Now you can publish dPacks and distribute to the dWeb:
         * Run ${chalk.green(`dpack publish`)} to publish a dPack!
         * View & Distribute your dPacks at ${opts.server}
-      `)
+      `))
       process.exit(0)
     })
   }

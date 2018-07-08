@@ -28,18 +28,16 @@ function whoami (opts) {
     if (!opts.server) return exitErr('No login information found.')
     return exitErr('No login information found for that server.')
   }
-  console.log(`
-    Your active dPack Repository information:
-
+  console.log(output(`
+    Your active dPack repository information:
     ---
     ${chalk.green(login.server)}
     Email: ${login.email}
     Username: ${login.username}
     ---
-
     Change your repository by logging in again:
     ${chalk.dim.green('dpack login <repository-url>')}
-  `)
+  `))
   process.exit(0)
 }
 

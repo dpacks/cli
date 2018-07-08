@@ -76,11 +76,11 @@ function register (opts) {
     }, function (err) {
       if (err && err.message) return exitErr(err.message)
       else if (err) return exitErr(err.toString())
-      console.log(`
+      console.log(output(`
         Created account on ${chalk.green(opts.server)}!
 
         Login to start publishing: ${chalk.green(`dpack login`)}
-      `)
+      `))
       process.exit(0)
     })
   }
