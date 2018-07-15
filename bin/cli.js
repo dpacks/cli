@@ -56,7 +56,7 @@ var config = {
     ],
     command: usage
   },
-  none: dwebShorthand,
+  none: syncShorthand,
   commands: [
     require('../src/commands/fork'),
     require('../src/commands/create'),
@@ -67,7 +67,7 @@ var config = {
     require('../src/commands/pull'),
     require('../src/commands/dist'),
     require('../src/commands/status'),
-    require('../src/commands/dweb'),
+    require('../src/commands/sync'),
     require('../src/commands/unpublish'),
     require('../src/commands/auth/register'),
     require('../src/commands/auth/whoami'),
@@ -105,29 +105,29 @@ function alias (argv) {
 
 // CLI Shortcuts
 // Commands:
-//   dpack <dweb://key> [<dir>] - fork/dweb a key
+//   dpack <dweb://key> [<dir>] - fork/sync a key
 //   dpack <dir> - create dpack + dist a directory
 //   dpack <extension>
-function dwebShorthand (opts) {
+function syncShorthand (opts) {
   if (!opts._.length) return usage(opts)
-  debug('dWeb shortcut command')
+  debug('sync shortcut command')
 
   var parsed = require('../src/parse-args')(opts)
 
   // Download Key
   if (parsed.key) {
     // dpack  <dweb://key> [<dir>] - fork/resume <link> in [dir]
-    debug('Fork dweb')
+    debug('fork sync')
     opts.dir = parsed.dir || parsed.key // put in `process.cwd()/key` if no dir
     opts.exit = opts.exit || false
     return require('../src/commands/fork').command(opts)
   }
 
   // dWeb dir
-  // dpack <dir> - dweb existing dpack in {dir}
+  // dpack <dir> - sync existing dpack in {dir}
   if (parsed.dir) {
     opts.shortcut = true
-    debug('Distribute dweb')
+    debug('dist sync')
 
     // Set default opts. TODO: use default opts in dist
     opts.watch = opts.watch || true
@@ -135,7 +135,7 @@ function dwebShorthand (opts) {
     return require('../src/commands/dist').command(opts)
   }
 
-  // If directory dweb fails, finally try extension
+  // If directory sync fails, finally try extension
   if (config.extensions.indexOf(opts._[0]) > -1) return require('../src/extensions')(opts)
 
   // All else fails, show usage

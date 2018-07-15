@@ -7,7 +7,7 @@ var spawn = require('./helpers/spawn.js')
 var dpack = path.resolve(path.join(__dirname, '..', 'bin', 'cli.js'))
 var fixtures = path.join(__dirname, 'fixtures')
 
-test('http - Distribute with http', function (t) {
+test('http - dist with http', function (t) {
   rimraf.sync(path.join(fixtures, '.dpack'))
   var cmd = dpack + ' dist --http'
   var st = spawn(t, cmd, {cwd: fixtures})
@@ -24,7 +24,7 @@ test('http - Distribute with http', function (t) {
       request('http://localhost:8080/folder/nested/hello.txt', function (err, resp, body) {
         t.error(err, 'no error')
         t.ok(resp.statusCode === 200, 'okay status')
-        t.same(body, 'the distributed web has arrived', 'body of file okay')
+        t.same(body, 'code for science and society', 'body of file okay')
 
         st.kill()
       })
@@ -36,7 +36,7 @@ test('http - Distribute with http', function (t) {
   st.end()
 })
 
-test('http - Distribute with http other port', function (t) {
+test('http - dist with http other port', function (t) {
   rimraf.sync(path.join(fixtures, '.dpack'))
   var cmd = dpack + ' dist --http 3333'
   var st = spawn(t, cmd, {cwd: fixtures})
@@ -53,7 +53,7 @@ test('http - Distribute with http other port', function (t) {
       request('http://localhost:3333/folder/nested/hello.txt', function (err, resp, body) {
         t.error(err, 'no error')
         t.ok(resp.statusCode === 200, 'okay status')
-        t.same(body, 'the distributed web has arrived', 'body of file okay')
+        t.same(body, 'code for science and society', 'body of file okay')
 
         st.kill()
       })

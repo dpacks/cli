@@ -34,7 +34,7 @@ authServer(port, function (err, server, closeServer) {
   })
 
   test('auth - register works', function (t) {
-    var cmd = dpack + ' register --email=hello@bob.com --password=jared --username=jared'
+    var cmd = dpack + ' register --email=hello@bob.com --password=joe --username=joe'
     var st = spawn(t, cmd, {cwd: baseTestDir})
     st.stdout.match(function (output) {
       t.same(output.trim(), 'Registered successfully.', 'output success message')
@@ -45,7 +45,7 @@ authServer(port, function (err, server, closeServer) {
   })
 
   test('auth - login works', function (t) {
-    var cmd = dpack + ' login --email=hello@bob.com --password=jared'
+    var cmd = dpack + ' login --email=hello@bob.com --password=joe'
     var st = spawn(t, cmd, {cwd: baseTestDir})
     st.stdout.match(function (output) {
       t.same(output.trim(), 'Logged in successfully.', 'output success message')
@@ -72,13 +72,13 @@ authServer(port, function (err, server, closeServer) {
     var st = spawn(t, cmd, {cwd: fixtures})
     st.stdout.empty()
     st.stderr.match(function (output) {
-      t.ok(output.indexOf('existing') > -1, 'Create vault before pub')
+      t.ok(output.indexOf('existing') > -1, 'Create archive before pub')
       return true
     })
     st.end()
   })
 
-  test('auth - create dPack to publish', function (t) {
+  test('auth - create dpack to publish', function (t) {
     rimraf.sync(path.join(fixtures, '.dpack'))
     rimraf.sync(path.join(fixtures, 'dpack.json'))
     var cmd = dpack + ' create --no-import'
@@ -93,7 +93,7 @@ authServer(port, function (err, server, closeServer) {
     st.end()
   })
 
-  test('auth - publish a dPack', function (t) {
+  test('auth - publish our awesome dpack', function (t) {
     var cmd = dpack + ' publish --name awesome'
     var st = spawn(t, cmd, {cwd: fixtures})
     st.stdout.match(function (output) {
@@ -106,7 +106,7 @@ authServer(port, function (err, server, closeServer) {
     st.end()
   })
 
-  test('auth - publish our awesome dPack with bad dpack.json url', function (t) {
+  test('auth - publish our awesome dpack with bad dpack.json url', function (t) {
     fs.readFile(path.join(fixtures, 'dpack.json'), function (err, contents) {
       t.ifError(err)
       var info = JSON.parse(contents)
@@ -129,14 +129,14 @@ authServer(port, function (err, server, closeServer) {
     })
   })
 
-  test('auth - fork from registry', function (t) {
+  test('auth - clone from registry', function (t) {
     // MAKE SURE THESE MATCH WHAT is published above
     // TODO: be less lazy and make a publish helper
-    var shortName = 'localhost:' + port + '/jared/awesome' // they'll never guess who wrote these tests
-    var baseDir = path.join(baseTestDir, 'dpacks_repository_dir')
+    var shortName = 'localhost:' + port + '/joe/awesome' // they'll never guess who wrote these tests
+    var baseDir = path.join(baseTestDir, 'dpack_registry_dir')
     mkdirp.sync(baseDir)
     var downloadDir = path.join(baseDir, shortName.split('/').pop())
-    var cmd = dpack + ' fork ' + shortName
+    var cmd = dpack + ' clone ' + shortName
     var st = spawn(t, cmd, {cwd: baseDir})
     st.stdout.match(function (output) {
       var lookingFor = output.indexOf('Looking for') > -1
@@ -152,7 +152,7 @@ authServer(port, function (err, server, closeServer) {
     })
   })
 
-  test('auth - publish our awesome dPack without a dpack.json file', function (t) {
+  test('auth - publish our awesome dpack without a dpack.json file', function (t) {
     rimraf(path.join(fixtures, 'dpack.json'), function (err) {
       t.ifError(err)
       var cmd = dpack + ' publish --name another-awesome'
@@ -171,15 +171,15 @@ authServer(port, function (err, server, closeServer) {
     })
   })
 
-  test('auth - bad fork from registry', function (t) {
-    var shortName = 'localhost:' + port + '/jared/not-at-all-awesome'
-    var baseDir = path.join(baseTestDir, 'dpacks_repository_dir_too')
+  test('auth - bad clone from registry', function (t) {
+    var shortName = 'localhost:' + port + '/joe/not-at-all-awesome'
+    var baseDir = path.join(baseTestDir, 'dpack_registry_dir_too')
     mkdirp.sync(baseDir)
     var downloadDir = path.join(baseDir, shortName.split('/').pop())
-    var cmd = dpack + ' fork ' + shortName
+    var cmd = dpack + ' clone ' + shortName
     var st = spawn(t, cmd, {cwd: baseDir})
     st.stderr.match(function (output) {
-      t.same(output.trim(), 'dPack with that name not found.', 'not found')
+      t.same(output.trim(), 'DPack with that name not found.', 'not found')
       st.kill()
       return true
     })

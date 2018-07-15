@@ -10,14 +10,14 @@ var dpack = path.resolve(path.join(__dirname, '..', 'bin', 'cli.js'))
 var fixtures = path.join(__dirname, 'fixtures')
 
 test('keys - print keys', function (t) {
-  help.distributeFixtures(function (_, distributeDPack) {
-    distributeDPack.close(function () {
+  help.shareFixtures(function (_, shareDPack) {
+    shareDPack.close(function () {
       var cmd = dpack + ' keys '
       var st = spawn(t, cmd, {cwd: fixtures})
 
       st.stdout.match(function (output) {
         if (output.indexOf('dweb://') === -1) return false
-        t.ok(output.indexOf(distributeDPack.key.toString('hex') > -1), 'prints key')
+        t.ok(output.indexOf(shareDPack.key.toString('hex') > -1), 'prints key')
         st.kill()
         return true
       })
@@ -28,15 +28,15 @@ test('keys - print keys', function (t) {
 })
 
 test('keys - print revelation key', function (t) {
-  help.distributeFixtures(function (_, distributeDPack) {
-    distributeDPack.close(function () {
+  help.shareFixtures(function (_, shareDPack) {
+    shareDPack.close(function () {
       var cmd = dpack + ' keys --revelation'
       var st = spawn(t, cmd, {cwd: fixtures})
 
       st.stdout.match(function (output) {
         if (output.indexOf('Revelation') === -1) return false
-        t.ok(output.indexOf(distributeDPack.key.toString('hex') > -1), 'prints key')
-        t.ok(output.indexOf(distributeDPack.vault.revelationKey.toString('hex') > -1), 'prints revelation key')
+        t.ok(output.indexOf(shareDPack.key.toString('hex') > -1), 'prints key')
+        t.ok(output.indexOf(shareDPack.vault.revelationKey.toString('hex') > -1), 'prints revelation key')
         st.kill()
         return true
       })
@@ -48,10 +48,10 @@ test('keys - print revelation key', function (t) {
 
 if (!process.env.TRAVIS) {
   test('keys - export & import secret key', function (t) {
-    help.distributeFixtures(function (_, distributeDPack) {
-      var key = distributeDPack.key.toString('hex')
+    help.shareFixtures(function (_, shareDPack) {
+      var key = shareDPack.key.toString('hex')
       tempDir(function (_, dir, cleanup) {
-        var cmd = dpack + ' fork ' + key
+        var cmd = dpack + ' clone ' + key
         var st = spawn(t, cmd, {cwd: dir, end: false})
         var dpackDir = path.join(dir, key)
 
@@ -59,7 +59,7 @@ if (!process.env.TRAVIS) {
           var downloadFinished = output.indexOf('Exiting') > -1
           if (!downloadFinished) return false
           st.kill()
-          distributeDPack.close(exchangeKeys)
+          shareDPack.close(exchangeKeys)
           return true
         })
         st.stderr.empty()
@@ -85,7 +85,7 @@ if (!process.env.TRAVIS) {
               if (!output.indexOf('secret key') === -1) return false
               st.stdin.write(secretKey + '\r')
               if (output.indexOf('Successful import') === -1) return false
-              t.ok(fs.statSync(path.join(dpackDir, '.dpack', 'metadata.ogd')), 'original dPack file exists')
+              t.ok(fs.statSync(path.join(dpackDir, '.dpack', 'metadata.ogd')), 'original dpack file exists')
               st.kill()
               return true
             })

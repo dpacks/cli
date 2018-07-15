@@ -6,23 +6,22 @@ var rimraf = require('rimraf')
 var encoding = require('@dwebs/codec')
 var recursiveReadSync = require('recursive-readdir-sync')
 var DPack = require('@dpack/core')
-var dwREM = require('@dwcore/rem')
+var ram = require('random-access-memory')
 var ddatabase = require('@ddatabase/core')
-var flock = require('@flockcore/revelation')
+var flock = require('@flockcore/core')
 
 module.exports.matchLink = matchDPackLink
 module.exports.isDir = isDir
 module.exports.testFolder = newTestFolder
 module.exports.dpackJson = dpackJson
-module.exports.distributeFixtures = distributeFixtures
-module.exports.distributeFeed = distributeFeed
+module.exports.shareFixtures = shareFixtures
+module.exports.shareFeed = shareFeed
 module.exports.fileList = fileList
 
-function distributeFixtures (opts, cb) {
-  if (typeof opts === 'function') return distributeFixtures(null, opts)
+function shareFixtures (opts, cb) {
+  if (typeof opts === 'function') return shareFixtures(null, opts)
   opts = opts || {}
   var fixtures = path.join(__dirname, '..', 'fixtures')
-  // os x adds this if you view the fixtures in finder and breaks the file count assertions
   try { fs.unlinkSync(path.join(fixtures, '.DS_Store')) } catch (e) { /* ignore error */ }
   if (opts.resume !== true) rimraf.sync(path.join(fixtures, '.dpack'))
   DPack(fixtures, {}, function (err, dpack) {
@@ -80,10 +79,10 @@ function isDir (dir) {
   }
 }
 
-function distributeFeed (cb) {
+function shareFeed (cb) {
   var sw
-  var feed = ddatabase(dwREM)
-  feed.append('greetings martian', function (err) {
+  var feed = ddatabase(ram)
+  feed.append('hello world', function (err) {
     if (err) throw err
     cb(null, encoding.toStr(feed.key), close)
   })

@@ -24,7 +24,7 @@ function login (opts) {
 
   if (opts._[0]) opts.server = opts._[0]
   var welcome = output(`
-    Welcome to ${chalk.green(`dPack`)} Command CLI!
+    Welcome to ${chalk.green(`dPack`)}!
     Login to publish your dPacks to the dWeb.
 
   `)

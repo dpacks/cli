@@ -35,7 +35,7 @@ function publish (opts) {
   var whoami = client.whoami()
   if (!whoami || !whoami.token) {
     var loginErr = output`
-      Welcome to ${chalk.green(`dPack`)} Command CLI!
+      Welcome to ${chalk.green(`dPack`)}!
       Publish your dPacks to ${chalk.green(opts.server)}.
 
       ${chalk.bold('Please login before publishing')}

@@ -33,7 +33,7 @@ function create (opts) {
     opts.dir = parseArgs(opts).dir || process.cwd()
   }
 
-  var welcome = `Welcome to ${chalk.green(`dPack`)} Command CLI!`
+  var welcome = `Welcome to ${chalk.green(`dPack`)}!`
   var intro = result(`
     You can turn any folder on your computer into a dPack.
     A dPack is a folder with some magic.

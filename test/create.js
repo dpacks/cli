@@ -2,119 +2,428 @@ var fs = require('fs')
 var path = require('path')
 var test = require('tape')
 var tempDir = require('temporary-directory')
-var DPack = require('@dpack/core')
 var spawn = require('./helpers/spawn.js')
 var help = require('./helpers')
 
 var dpack = path.resolve(path.join(__dirname, '..', 'bin', 'cli.js'))
-var fixtures = path.join(__dirname, 'fixtures')
 
-// os x adds this if you view the fixtures in finder and breaks the file count assertions
-try { fs.unlinkSync(path.join(fixtures, '.DS_Store')) } catch (e) { /* ignore error */ }
-
-// start without dpack.json
-try { fs.unlinkSync(path.join(fixtures, 'dpack.json')) } catch (e) { /* ignore error */ }
-
-test('create - default opts no import', function (t) {
-  tempDir(function (_, dir, cleanup) {
-    var cmd = dpack + ' create --title data --description thing'
-    var st = spawn(t, cmd, {cwd: dir})
-
-    st.stdout.match(function (output) {
-      var dpackCreated = output.indexOf('Created empty dPack') > -1
-      if (!dpackCreated) return false
-
-      t.ok(help.isDir(path.join(dir, '.dpack')), 'creates dPack directory')
-
-      st.kill()
-      return true
-    })
-    st.succeeds('exits after create finishes')
-    st.stderr.empty()
-    st.end(cleanup)
-  })
-})
-
-test('create - errors on existing vault', function (t) {
-  tempDir(function (_, dir, cleanup) {
-    DPack(dir, function (err, dpack) {
-      t.error(err, 'no error')
-      dpack.close(function () {
-        var cmd = dpack + ' create --title data --description thing'
-        var st = spawn(t, cmd, {cwd: dir})
-        st.stderr.match(function (output) {
-          t.ok(output, 'errors')
-          st.kill()
-          return true
-        })
-        st.end()
-      })
-    })
-  })
-})
-
-test('create - sync to dWeb after create ok', function (t) {
-  tempDir(function (_, dir, cleanup) {
-    var cmd = dpack + ' create --title data --description thing'
-    var st = spawn(t, cmd, {cwd: dir, end: false})
-    st.stdout.match(function (output) {
-      var connected = output.indexOf('Created empty dPack') > -1
-      if (!connected) return false
-      doSync()
-      return true
-    })
-
-    function doSync () {
-      var cmd = dpack + ' dweb '
+test('fork - default opts', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    var key = shareDPack.key.toString('hex')
+    tempDir(function (_, dir, cleanup) {
+      var cmd = dpack + ' fork ' + key
       var st = spawn(t, cmd, {cwd: dir})
+      var dpackDir = path.join(dir, key)
 
       st.stdout.match(function (output) {
-        var connected = output.indexOf('Sharing') > -1
-        if (!connected) return false
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        var stats = shareDPack.stats.get()
+        var fileRe = new RegExp(stats.files + ' files')
+        var bytesRe = new RegExp(/1\.\d KB/)
+
+        t.ok(output.match(fileRe), 'total size: files okay')
+        t.ok(output.match(bytesRe), 'total size: bytes okay')
+        t.ok(help.isDir(dpackDir), 'creates download directory')
+
+        var fileList = help.fileList(dpackDir).join(' ')
+        var hasCsvFile = fileList.indexOf('all_hour.csv') > -1
+        t.ok(hasCsvFile, 'csv file downloaded')
+        var hasDPackFolder = fileList.indexOf('.dpack') > -1
+        t.ok(hasDPackFolder, '.dpack folder created')
+        var hasSubDir = fileList.indexOf('folder') > -1
+        t.ok(hasSubDir, 'folder created')
+        var hasNestedDir = fileList.indexOf('nested') > -1
+        t.ok(hasNestedDir, 'nested folder created')
+        var hasHelloFile = fileList.indexOf('hello.txt') > -1
+        t.ok(hasHelloFile, 'hello.txt file downloaded')
+
         st.kill()
         return true
       })
+      st.succeeds('exits after finishing download')
       st.stderr.empty()
-      st.end(cleanup)
-    }
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
   })
 })
 
-test('create - init alias', function (t) {
+test('fork - specify dir', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    tempDir(function (_, dir, cleanup) {
+      var key = shareDPack.key.toString('hex')
+      var customDir = 'my_dir'
+      var cmd = dpack + ' fork ' + key + ' ' + customDir
+      var st = spawn(t, cmd, {cwd: dir})
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        t.ok(help.isDir(path.join(dir, customDir)), 'creates download directory')
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
+  })
+})
+
+test('fork - dweb:// link', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    tempDir(function (_, dir, cleanup) {
+      var key = 'dweb://' + shareDPack.key.toString('hex') + '/'
+      var cmd = dpack + ' fork ' + key + ' '
+      var downloadDir = path.join(dir, shareDPack.key.toString('hex'))
+      var st = spawn(t, cmd, {cwd: dir})
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        t.ok(help.isDir(path.join(downloadDir)), 'creates download directory')
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
+  })
+})
+
+test('fork - ddwebs.io/key link', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    tempDir(function (_, dir, cleanup) {
+      var key = 'dwebs.io/' + shareDPack.key.toString('hex') + '/'
+      var cmd = dpack + ' fork ' + key + ' '
+      var downloadDir = path.join(dir, shareDPack.key.toString('hex'))
+      var st = spawn(t, cmd, {cwd: dir})
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        t.ok(help.isDir(path.join(downloadDir)), 'creates download directory')
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
+  })
+})
+
+// TODO: fix --temp for forks
+// test('fork - with --temp', function (t) {
+//   // cmd: dpack fork <link>
+//   help.shareFixtures(function (_, fixturesDat) {
+//     shareDPack = fixturesDat
+//     var key = shareDPack.key.toString('hex')
+//     var cmd = dpack + ' fork ' + key + ' --temp'
+//     var st = spawn(t, cmd, {cwd: baseTestDir})
+//     var dpackDir = path.join(baseTestDir, key)
+//     st.stdout.match(function (output) {
+//       var downloadFinished = output.indexOf('Download Finished') > -1
+//       if (!downloadFinished) return false
+
+//       var stats = shareDPack.stats.get()
+//       var fileRe = new RegExp(stats.filesTotal + ' files')
+//       var bytesRe = new RegExp(/1\.\d{1,2} kB/)
+
+//       t.ok(help.matchLink(output), 'prints link')
+//       t.ok(output.indexOf('dpack-download-folder/' + key) > -1, 'prints dir')
+//       t.ok(output.match(fileRe), 'total size: files okay')
+//       t.ok(output.match(bytesRe), 'total size: bytes okay')
+//       t.ok(help.isDir(dpackDir), 'creates download directory')
+
+//       var fileList = help.fileList(dpackDir).join(' ')
+//       var hasCsvFile = fileList.indexOf('all_hour.csv') > -1
+//       t.ok(hasCsvFile, 'csv file downloaded')
+//       var hasDPackFolder = fileList.indexOf('.dpack') > -1
+//       t.ok(!hasDPackFolder, '.dpack folder not created')
+//       var hasSubDir = fileList.indexOf('folder') > -1
+//       t.ok(hasSubDir, 'folder created')
+//       var hasNestedDir = fileList.indexOf('nested') > -1
+//       t.ok(hasNestedDir, 'nested folder created')
+//       var hasHelloFile = fileList.indexOf('hello.txt') > -1
+//       t.ok(hasHelloFile, 'hello.txt file downloaded')
+
+//       st.kill()
+//       return true
+//     })
+//     st.succeeds('exits after finishing download')
+//     st.stderr.empty()
+//     st.end()
+//   })
+// })
+
+test('fork - invalid link', function (t) {
+  var key = 'best-key-ever'
+  var cmd = dpack + ' fork ' + key
   tempDir(function (_, dir, cleanup) {
-    var cmd = dpack + ' init --title data --description thing'
     var st = spawn(t, cmd, {cwd: dir})
-
-    st.stdout.match(function (output) {
-      var dpackCreated = output.indexOf('Created empty dPack') > -1
-      if (!dpackCreated) return false
-
-      t.ok(help.isDir(path.join(dir, '.dpack')), 'creates dpack directory')
-
+    var dpackDir = path.join(dir, key)
+    st.stderr.match(function (output) {
+      var error = output.indexOf('Could not resolve link') > -1
+      if (!error) return false
+      t.ok(error, 'has error')
+      t.ok(!help.isDir(dpackDir), 'download dir removed')
       st.kill()
       return true
     })
-    st.succeeds('exits after create finishes')
-    st.stderr.empty()
     st.end(cleanup)
   })
 })
 
-test('create - with path', function (t) {
-  tempDir(function (_, dir, cleanup) {
-    var cmd = dpack + ' init ' + dir + ' --title data --description thing'
-    var st = spawn(t, cmd)
-    st.stdout.match(function (output) {
-      var dpackCreated = output.indexOf('Created empty dPack') > -1
-      if (!dpackCreated) return false
+test('fork - shortcut/stateless fork', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    var key = shareDPack.key.toString('hex')
+    tempDir(function (_, dir, cleanup) {
+      var dpackDir = path.join(dir, key)
+      var cmd = dpack + ' ' + key + ' ' + dpackDir + ' --exit'
+      var st = spawn(t, cmd)
 
-      t.ok(help.isDir(path.join(dir, '.dpack')), 'creates dpack directory')
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
 
-      st.kill()
-      return true
+        t.ok(help.isDir(dpackDir), 'creates download directory')
+
+        var fileList = help.fileList(dpackDir).join(' ')
+        var hasCsvFile = fileList.indexOf('all_hour.csv') > -1
+        t.ok(hasCsvFile, 'csv file downloaded')
+        var hasDPackFolder = fileList.indexOf('.dpack') > -1
+        t.ok(hasDPackFolder, '.dpack folder created')
+        var hasSubDir = fileList.indexOf('folder') > -1
+        t.ok(hasSubDir, 'folder created')
+        var hasNestedDir = fileList.indexOf('nested') > -1
+        t.ok(hasNestedDir, 'nested folder created')
+        var hasHelloFile = fileList.indexOf('hello.txt') > -1
+        t.ok(hasHelloFile, 'hello.txt file downloaded')
+
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
     })
-    st.succeeds('exits after create finishes')
-    st.stderr.empty()
-    st.end(cleanup)
+  })
+})
+
+test('fork - specify directory containing dpack.json', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    tempDir(function (_, dir, cleanup) {
+      fs.writeFileSync(path.join(dir, 'dpack.json'), JSON.stringify({url: shareDPack.key.toString('hex')}), 'utf8')
+
+      // dpack fork /dir
+      var cmd = dpack + ' fork ' + dir
+      var st = spawn(t, cmd)
+      var dpackDir = dir
+
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        var fileList = help.fileList(dpackDir).join(' ')
+        var hasCsvFile = fileList.indexOf('all_hour.csv') > -1
+        t.ok(hasCsvFile, 'csv file downloaded')
+        var hasDPackFolder = fileList.indexOf('.dpack') > -1
+        t.ok(hasDPackFolder, '.dpack folder created')
+        var hasSubDir = fileList.indexOf('folder') > -1
+        t.ok(hasSubDir, 'folder created')
+        var hasNestedDir = fileList.indexOf('nested') > -1
+        t.ok(hasNestedDir, 'nested folder created')
+        var hasHelloFile = fileList.indexOf('hello.txt') > -1
+        t.ok(hasHelloFile, 'hello.txt file downloaded')
+
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
+  })
+})
+
+test('fork - specify directory containing dpack.json with cwd', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    tempDir(function (_, dir, cleanup) {
+      fs.writeFileSync(path.join(dir, 'dpack.json'), JSON.stringify({url: shareDPack.key.toString('hex')}), 'utf8')
+
+      // cd dir && dpack fork /dir/dpack.json
+      var cmd = dpack + ' fork ' + dir
+      var st = spawn(t, cmd, {cwd: dir})
+      var dpackDir = dir
+
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        var fileList = help.fileList(dpackDir).join(' ')
+        var hasCsvFile = fileList.indexOf('all_hour.csv') > -1
+        t.ok(hasCsvFile, 'csv file downloaded')
+        var hasDPackFolder = fileList.indexOf('.dpack') > -1
+        t.ok(hasDPackFolder, '.dpack folder created')
+        var hasSubDir = fileList.indexOf('folder') > -1
+        t.ok(hasSubDir, 'folder created')
+        var hasNestedDir = fileList.indexOf('nested') > -1
+        t.ok(hasNestedDir, 'nested folder created')
+        var hasHelloFile = fileList.indexOf('hello.txt') > -1
+        t.ok(hasHelloFile, 'hello.txt file downloaded')
+
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
+  })
+})
+
+test('fork - specify dpack.json path', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    tempDir(function (_, dir, cleanup) {
+      var dpackJsonPath = path.join(dir, 'dpack.json')
+      fs.writeFileSync(dpackJsonPath, JSON.stringify({url: shareDPack.key.toString('hex')}), 'utf8')
+
+      // dpack fork /dir/dpack.json
+      var cmd = dpack + ' fork ' + dpackJsonPath
+      var st = spawn(t, cmd)
+      var dpackDir = dir
+
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        var fileList = help.fileList(dpackDir).join(' ')
+        var hasCsvFile = fileList.indexOf('all_hour.csv') > -1
+        t.ok(hasCsvFile, 'csv file downloaded')
+        var hasDPackFolder = fileList.indexOf('.dpack') > -1
+        t.ok(hasDPackFolder, '.dpack folder created')
+        var hasSubDir = fileList.indexOf('folder') > -1
+        t.ok(hasSubDir, 'folder created')
+        var hasNestedDir = fileList.indexOf('nested') > -1
+        t.ok(hasNestedDir, 'nested folder created')
+        var hasHelloFile = fileList.indexOf('hello.txt') > -1
+        t.ok(hasHelloFile, 'hello.txt file downloaded')
+
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
+  })
+})
+
+test('fork - specify dpack.json path with cwd', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    tempDir(function (_, dir, cleanup) {
+      var dpackJsonPath = path.join(dir, 'dpack.json')
+      fs.writeFileSync(dpackJsonPath, JSON.stringify({url: shareDPack.key.toString('hex')}), 'utf8')
+
+      // cd /dir && dpack fork /dir/dpack.json
+      var cmd = dpack + ' fork ' + dpackJsonPath
+      var st = spawn(t, cmd, {cwd: dir})
+      var dpackDir = dir
+
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        var fileList = help.fileList(dpackDir).join(' ')
+        var hasCsvFile = fileList.indexOf('all_hour.csv') > -1
+        t.ok(hasCsvFile, 'csv file downloaded')
+        var hasDPackFolder = fileList.indexOf('.dpack') > -1
+        t.ok(hasDPackFolder, '.dpack folder created')
+        var hasSubDir = fileList.indexOf('folder') > -1
+        t.ok(hasSubDir, 'folder created')
+        var hasNestedDir = fileList.indexOf('nested') > -1
+        t.ok(hasNestedDir, 'nested folder created')
+        var hasHelloFile = fileList.indexOf('hello.txt') > -1
+        t.ok(hasHelloFile, 'hello.txt file downloaded')
+
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
+  })
+})
+
+test('fork - specify dpack.json + directory', function (t) {
+  help.shareFixtures(function (_, shareDPack) {
+    tempDir(function (_, dir, cleanup) {
+      var dpackDir = path.join(dir, 'fork-dest')
+      var dpackJsonPath = path.join(dir, 'dpack.json') // make dpack.json in different dir
+
+      fs.mkdirSync(dpackDir)
+      fs.writeFileSync(dpackJsonPath, JSON.stringify({url: shareDPack.key.toString('hex')}), 'utf8')
+
+      // dpack fork /dir/dpack.json /dir/fork-dest
+      var cmd = dpack + ' fork ' + dpackJsonPath + ' ' + dpackDir
+      var st = spawn(t, cmd)
+
+      st.stdout.match(function (output) {
+        var downloadFinished = output.indexOf('Exiting') > -1
+        if (!downloadFinished) return false
+
+        var fileList = help.fileList(dpackDir).join(' ')
+        var hasCsvFile = fileList.indexOf('all_hour.csv') > -1
+        t.ok(hasCsvFile, 'csv file downloaded')
+        var hasDPackFolder = fileList.indexOf('.dpack') > -1
+        t.ok(hasDPackFolder, '.dpack folder created')
+        var hasSubDir = fileList.indexOf('folder') > -1
+        t.ok(hasSubDir, 'folder created')
+        var hasNestedDir = fileList.indexOf('nested') > -1
+        t.ok(hasNestedDir, 'nested folder created')
+        var hasHelloFile = fileList.indexOf('hello.txt') > -1
+        t.ok(hasHelloFile, 'hello.txt file downloaded')
+
+        st.kill()
+        return true
+      })
+      st.succeeds('exits after finishing download')
+      st.stderr.empty()
+      st.end(function () {
+        cleanup()
+        shareDPack.close()
+      })
+    })
   })
 })

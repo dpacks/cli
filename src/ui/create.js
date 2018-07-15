@@ -19,7 +19,7 @@ function createUI (state) {
   var title = '\n'
   var progressView
   var exitMsg = `
-    Your dPack is created! Run ${chalk.green('dpack dweb')} to distribute:
+    Your dPack is created! Run ${chalk.green('dpack sync')} to distribute:
     ${keyEl(dpack.key)}
   `
   if (!state.opts.import) {

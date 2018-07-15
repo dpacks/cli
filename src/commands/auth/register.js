@@ -24,7 +24,7 @@ function register (opts) {
   // TODO: check if logged in?
   if (opts._[0]) opts.server = opts._[0]
   var welcome = output(`
-    Welcome to ${chalk.green(`dPack`)} program!
+    Welcome to ${chalk.green(`dPack`)}!
     Create a new account with a dPack Repository.
 
   `)

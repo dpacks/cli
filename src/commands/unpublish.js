@@ -32,7 +32,7 @@ function unpublish (opts) {
   var whoami = client.whoami()
   if (!whoami || !whoami.token) {
     var loginErr = output`
-      Welcome to ${chalk.green(`dPack`)} Command CLI!
+      Welcome to ${chalk.green(`dPack`)}!
 
       ${chalk.bold('You must login before unpublishing.')}
       ${chalk.green('dpack login')}
