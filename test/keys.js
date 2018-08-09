@@ -6,18 +6,18 @@ var tempDir = require('temporary-directory')
 var spawn = require('./helpers/spawn.js')
 var help = require('./helpers')
 
-var dpack = path.resolve(path.join(__dirname, '..', 'bin', 'cli.js'))
+var dweb = path.resolve(path.join(__dirname, '..', 'bin', 'cli.js'))
 var fixtures = path.join(__dirname, 'fixtures')
 
 test('keys - print keys', function (t) {
-  help.shareFixtures(function (_, shareDPack) {
-    shareDPack.close(function () {
-      var cmd = dpack + ' keys '
+  help.shareFixtures(function (_, shareDWeb) {
+    shareDWeb.close(function () {
+      var cmd = dweb + ' keys '
       var st = spawn(t, cmd, {cwd: fixtures})
 
       st.stdout.match(function (output) {
         if (output.indexOf('dweb://') === -1) return false
-        t.ok(output.indexOf(shareDPack.key.toString('hex') > -1), 'prints key')
+        t.ok(output.indexOf(shareDWeb.key.toString('hex') > -1), 'prints key')
         st.kill()
         return true
       })
@@ -28,15 +28,15 @@ test('keys - print keys', function (t) {
 })
 
 test('keys - print revelation key', function (t) {
-  help.shareFixtures(function (_, shareDPack) {
-    shareDPack.close(function () {
-      var cmd = dpack + ' keys --revelation'
+  help.shareFixtures(function (_, shareDWeb) {
+    shareDWeb.close(function () {
+      var cmd = dweb + ' keys --revelation'
       var st = spawn(t, cmd, {cwd: fixtures})
 
       st.stdout.match(function (output) {
         if (output.indexOf('Revelation') === -1) return false
-        t.ok(output.indexOf(shareDPack.key.toString('hex') > -1), 'prints key')
-        t.ok(output.indexOf(shareDPack.vault.revelationKey.toString('hex') > -1), 'prints revelation key')
+        t.ok(output.indexOf(shareDWeb.key.toString('hex') > -1), 'prints key')
+        t.ok(output.indexOf(shareDWeb.vault.revelationKey.toString('hex') > -1), 'prints revelation key')
         st.kill()
         return true
       })
@@ -48,18 +48,18 @@ test('keys - print revelation key', function (t) {
 
 if (!process.env.TRAVIS) {
   test('keys - export & import secret key', function (t) {
-    help.shareFixtures(function (_, shareDPack) {
-      var key = shareDPack.key.toString('hex')
+    help.shareFixtures(function (_, shareDWeb) {
+      var key = shareDWeb.key.toString('hex')
       tempDir(function (_, dir, cleanup) {
-        var cmd = dpack + ' clone ' + key
+        var cmd = dweb + ' clone ' + key
         var st = spawn(t, cmd, {cwd: dir, end: false})
-        var dpackDir = path.join(dir, key)
+        var dwebDir = path.join(dir, key)
 
         st.stdout.match(function (output) {
           var downloadFinished = output.indexOf('Exiting') > -1
           if (!downloadFinished) return false
           st.kill()
-          shareDPack.close(exchangeKeys)
+          shareDWeb.close(exchangeKeys)
           return true
         })
         st.stderr.empty()
@@ -67,7 +67,7 @@ if (!process.env.TRAVIS) {
         function exchangeKeys () {
           var secretKey = null
 
-          var exportKey = dpack + ' keys export'
+          var exportKey = dweb + ' keys export'
           var st = spawn(t, exportKey, {cwd: fixtures, end: false})
           st.stdout.match(function (output) {
             if (!output) return false
@@ -79,19 +79,19 @@ if (!process.env.TRAVIS) {
           st.stderr.empty()
 
           function importKey () {
-            var exportKey = dpack + ' keys import'
-            var st = spawn(t, exportKey, {cwd: dpackDir})
+            var exportKey = dweb + ' keys import'
+            var st = spawn(t, exportKey, {cwd: dwebDir})
             st.stdout.match(function (output) {
               if (!output.indexOf('secret key') === -1) return false
               st.stdin.write(secretKey + '\r')
               if (output.indexOf('Successful import') === -1) return false
-              t.ok(fs.statSync(path.join(dpackDir, '.dpack', 'metadata.ogd')), 'original dpack file exists')
+              t.ok(fs.statSync(path.join(dwebDir, '.dweb', 'metadata.ogd')), 'original dPack file exists')
               st.kill()
               return true
             })
             st.stderr.empty()
             st.end(function () {
-              rimraf.sync(path.join(fixtures, '.dpack'))
+              rimraf.sync(path.join(fixtures, '.dweb'))
               cleanup()
             })
           }

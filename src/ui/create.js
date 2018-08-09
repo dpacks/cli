@@ -8,19 +8,19 @@ var pluralize = require('./elements/pluralize')
 module.exports = createUI
 
 function createUI (state) {
-  if (!state.dpack) {
+  if (!state.dweb) {
     return result(`
-    Creating a dPack! Add information to your dpack.json file:
+    Creating a dPack! Add information to your dweb.json file:
   `)
   }
 
-  var dpack = state.dpack
-  var stats = dpack.stats.get()
+  var dweb = state.dweb
+  var stats = dweb.stats.get()
   var title = '\n'
   var progressView
   var exitMsg = `
-    Your dPack is created! Run ${chalk.green('dpack sync')} to distribute:
-    ${keyEl(dpack.key)}
+    Your dPack is created! Run ${chalk.green('dweb sync')} to distribute:
+    ${keyEl(dweb.key)}
   `
   if (!state.opts.import) {
     // set exiting right away
@@ -29,7 +29,7 @@ function createUI (state) {
 
   if (!state.exiting) {
     // Only show key if not about to exit
-    title = `${keyEl(dpack.key)}\n`
+    title = `${keyEl(dweb.key)}\n`
   }
   if (state.title) title += state.title
 

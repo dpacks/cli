@@ -3,7 +3,7 @@ module.exports = {
   command: publish,
   help: [
     'Publish your dPack to a dPack Repository',
-    'Usage: dPack publish [<repository>]',
+    'Usage: dweb publish [<repository>]',
     '',
     'By default it will publish to your active registry.',
     'Specify the server to change where the dPack is published.'
@@ -18,12 +18,12 @@ module.exports = {
 
 function publish (opts) {
   var path = require('path')
-  var DPack = require('@dpack/core')
+  var DWeb = require('@dpack/core')
   var encoding = require('@dwebs/codec')
   var output = require('@dpack/logger/result')
   var prompt = require('prompt')
   var chalk = require('chalk')
-  var DPackJson = require('@dpack/metadata')
+  var DWebJson = require('@dpack/metadata')
   var xtend = require('xtend')
   var Repository = require('../repository')
 
@@ -39,10 +39,10 @@ function publish (opts) {
       Publish your dPacks to ${chalk.green(opts.server)}.
 
       ${chalk.bold('Please login before publishing')}
-      ${chalk.green('dpack login')}
+      ${chalk.green('dweb login')}
 
       New to ${chalk.green(opts.server)} and need an account?
-      ${chalk.green('dpack register')}
+      ${chalk.green('dweb register')}
 
       Explore public dPacks at ${chalk.blue('dpacks.io/explore')}
     `
@@ -50,22 +50,22 @@ function publish (opts) {
   }
 
   opts.createIfMissing = false // publish must always be a resumed vault
-  DPack(opts.dir, opts, function (err, dpack) {
+  DWeb(opts.dir, opts, function (err, dweb) {
     if (err && err.name === 'MissingError') return exitErr('No existing dPack in this directory. Create a dPack before publishing.')
     else if (err) return exitErr(err)
 
-    dpack.joinNetwork() // join network to upload metadata
+    dweb.joinNetwork() // join network to upload metadata
 
-    var dpackjson = DPackJson(dpack.vault, {file: path.join(dpack.path, 'dpack.json')})
-    dpackjson.read(publish)
+    var dwebjson = DWebJson(dweb.vault, {file: path.join(dweb.path, 'dweb.json')})
+    dwebjson.read(publish)
 
     function publish (_, data) {
-      // ignore dpackjson.read() err, we'll prompt for name
+      // ignore dwebjson.read() err, we'll prompt for name
 
-      // xtend dpack.json with opts
-      var dpackInfo = xtend({
+      // xtend dweb.json with opts
+      var dwebInfo = xtend({
         name: opts.name,
-        url: 'dweb://' + encoding.toStr(dpack.key), // force correct url in publish? what about non-dpack urls?
+        url: 'dweb://' + encoding.toStr(dweb.key), // force correct url in publish? what about non-dweb urls?
         title: opts.title,
         description: opts.description
       }, data)
@@ -75,29 +75,29 @@ function publish (opts) {
       `
       console.log(welcome)
 
-      if (dpackInfo.name) return makeRequest(dpackInfo)
+      if (dwebInfo.name) return makeRequest(dwebInfo)
 
       prompt.message = ''
       prompt.start()
       prompt.get({
         properties: {
           name: {
-            description: chalk.magenta('dpack name'),
+            description: chalk.magenta('dweb name'),
             pattern: /^[a-zA-Z0-9-]+$/,
-            message: `A dpack name can only have letters, numbers, or dashes.\n Like ${chalk.bold('cool-cats-12meow')}`,
+            message: `A dPack name can only have letters, numbers, or dashes.\n Like ${chalk.bold('cool-cats-12meow')}`,
             required: true
           }
         }
       }, function (err, results) {
         if (err) return exitErr(err)
-        dpackInfo.name = results.name
-        makeRequest(dpackInfo)
+        dwebInfo.name = results.name
+        makeRequest(dwebInfo)
       })
     }
 
-    function makeRequest (dpackInfo) {
-      console.log(`Please wait, '${chalk.bold(dpackInfo.name)}' will soon be ready for its great unveiling...`)
-      client.dpacks.create(dpackInfo, function (err, resp, body) {
+    function makeRequest (dwebInfo) {
+      console.log(`Please wait, '${chalk.bold(dwebInfo.name)}' will soon be ready for its great unveiling...`)
+      client.dwebs.create(dwebInfo, function (err, resp, body) {
         if (err) {
           if (err.message) {
             if (err.message === 'timed out') {
@@ -106,7 +106,7 @@ function publish (opts) {
               `)
             }
             var str = err.message.trim()
-            if (str === 'jwt expired') return exitErr(`Session expired, please ${chalk.green('dpack login')} again`)
+            if (str === 'jwt expired') return exitErr(`Session expired, please ${chalk.green('dweb login')} again`)
             return exitErr('ERROR: ' + err.message) // node error
           }
 
@@ -115,13 +115,13 @@ function publish (opts) {
         }
         if (body.statusCode === 400) return exitErr(new Error(body.message))
 
-        dpackjson.write(dpackInfo, function (err) {
+        dwebjson.write(dwebInfo, function (err) {
           if (err) return exitErr(err)
-          // TODO: write published url to dpack.json (need spec)
+          // TODO: write published url to dweb.json (need spec)
           var msg = output`
 
             We ${body.updated === 1 ? 'updated' : 'published'} your dPack!
-            ${chalk.blue.underline(`${opts.server}/${whoami.username}/${dpackInfo.name}`)}
+            ${chalk.blue.underline(`${opts.server}/${whoami.username}/${dwebInfo.name}`)}
           `// TODO: get url back? it'd be better to confirm link than guess username/dpackname structure
 
           console.log(msg)
@@ -135,7 +135,7 @@ function publish (opts) {
           } else {
             console.log(output`
 
-              Remember to use ${chalk.green('dpack dist')} before sharing.
+              Remember to use ${chalk.green('dweb dist')} before sharing.
               This will make sure your dPack is available.
             `)
           }

@@ -4,20 +4,20 @@ module.exports = {
   help: [
     'Get information on about the dPack in a directory.',
     '',
-    'Usage: dpack status'
+    'Usage: dweb status'
   ].join('\n'),
   options: []
 }
 
 function status (opts) {
-  var DPack = require('@dpack/core')
+  var DWeb = require('@dpack/core')
   var dPackLogger = require('@dpack/logger')
   var statusUI = require('../ui/status')
   var onExit = require('./lib/exit')
   var parseArgs = require('../parse-args')
   var debug = require('debug')('dpack')
 
-  debug('dpack status')
+  debug('dweb status')
   if (!opts.dir) {
     opts.dir = parseArgs(opts).dir || process.cwd()
   }
@@ -28,15 +28,15 @@ function status (opts) {
   dPackEntry.use(function (state, bus) {
     state.opts = opts
 
-    DPack(opts.dir, opts, function (err, dpack) {
+    DWeb(opts.dir, opts, function (err, dweb) {
       if (err && err.name === 'MissingError') return bus.emit('exit:warn', 'Sorry, could not find a dPack in this directory.')
       if (err) return bus.emit('exit:error', err)
 
-      state.dpack = dpack
-      var stats = dpack.trackStats()
-      if (stats.get().version === dpack.version) return exit()
+      state.dweb = dweb
+      var stats = dweb.trackStats()
+      if (stats.get().version === dweb.version) return exit()
       stats.on('update', function () {
-        if (stats.get().version === dpack.version) return exit()
+        if (stats.get().version === dweb.version) return exit()
       })
 
       function exit () {

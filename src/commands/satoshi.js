@@ -5,7 +5,7 @@ module.exports = {
     '  1. Check if you can connect to a peer on a public server.',
     '  2. Gives you a link to test direct peer connections.',
     '',
-    'Usage: dpack satoshi [<link>]'
+    'Usage: dweb satoshi [<link>]'
   ].join('\n'),
   options: [],
   command: function (opts) {

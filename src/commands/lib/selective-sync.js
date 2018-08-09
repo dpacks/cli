@@ -3,7 +3,7 @@ var path = require('path')
 
 module.exports = function (state, opts) {
   // selective sync stuff
-  var parsing = opts.selectFromFile !== '.dpackdownload' ? opts.selectFromFile : path.join(opts.dir, '.dpackdownload')
+  var parsing = opts.selectFromFile !== '.dwebdownload' ? opts.selectFromFile : path.join(opts.dir, '.dwebdownload')
   opts.selectedFiles = parseFiles(parsing)
   if (opts.select && typeof opts.select === 'string') opts.selectedFiles = opts.select.split(',')
   if (opts.selectedFiles) {

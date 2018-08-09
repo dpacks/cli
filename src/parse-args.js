@@ -3,7 +3,7 @@ var path = require('path')
 var encoding = require('@dwebs/codec')
 
 module.exports = function (opts) {
-  // dpack [<cmd>] arg1 arg2 [options]
+  // dweb [<cmd>] arg1 arg2 [options]
   // parse args without options from opts._
   // return parsed { dir, key }
   var parsed = {
@@ -11,10 +11,10 @@ module.exports = function (opts) {
     dir: opts.dir || null // process.cwd() ?
   }
 
-  // dpack [<cmd>]
+  // dweb [<cmd>]
   if (!opts._.length) return parsed
 
-  // dpack [<cmd>] arg1 arg2
+  // dweb [<cmd>] arg1 arg2
   // arg1 = key
   // arg2 = dir
   if (opts._.length === 2) {
@@ -23,7 +23,7 @@ module.exports = function (opts) {
     return parsed
   }
 
-  // dpack [<cmd>] arg
+  // dweb [<cmd>] arg
   // arg = dir or key
 
   // First, check if key

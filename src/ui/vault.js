@@ -15,17 +15,17 @@ var pkg = require('../../package.json')
 module.exports = vaultUI
 
 function vaultUI (state) {
-  if (!state.dpack) return 'Starting dPack program...'
+  if (!state.dweb) return 'Starting dPack program...'
   if (!state.writable && !state.hasContent) return 'Connecting to dPack network...'
   if (!state.warnings) state.warnings = []
 
-  var dpack = state.dpack
-  var stats = dpack.stats.get()
-  var title = (state.dpack.resumed) ? '' : `Created new dPack in ${dpack.path}${path.sep}.dpack\n`
+  var dweb = state.dweb
+  var stats = dweb.stats.get()
+  var title = (state.dweb.resumed) ? '' : `Created new dPack in ${dweb.path}${path.sep}.dweb\n`
   var progressView
 
   if (state.writable || state.opts.showKey) {
-    title += `${keyEl(dpack.key)}\n`
+    title += `${keyEl(dweb.key)}\n`
   }
   if (state.title) title += state.title
   else if (state.writable) title += 'Distributing dPack'

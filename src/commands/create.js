@@ -2,9 +2,9 @@ module.exports = {
   name: 'create',
   command: create,
   help: [
-    'Create an empty dPack and dpack.json',
+    'Create an empty dPack and dweb.json file.',
     '',
-    'Usage: dpack create [directory]'
+    'Usage: dweb create [directory]'
   ].join('\n'),
   options: [
     {
@@ -12,7 +12,7 @@ module.exports = {
       boolean: true,
       default: false,
       abbr: 'y',
-      help: 'Skip dpack.json creation.'
+      help: 'Skip dweb.json creation.'
     }
   ]
 }
@@ -20,15 +20,15 @@ module.exports = {
 function create (opts) {
   var path = require('path')
   var fs = require('fs')
-  var DPack = require('@dpack/core')
+  var DWeb = require('@dpack/core')
   var result = require('@dpack/logger/result')
-  var DPackJson = require('@dpack/metadata')
+  var DWebJson = require('@dpack/metadata')
   var prompt = require('prompt')
   var chalk = require('chalk')
   var parseArgs = require('../parse-args')
   var debug = require('debug')('dpack')
 
-  debug('dpack create')
+  debug('dweb create')
   if (!opts.dir) {
     opts.dir = parseArgs(opts).dir || process.cwd()
   }
@@ -38,9 +38,9 @@ function create (opts) {
     You can turn any folder on your computer into a dPack.
     A dPack is a folder with some magic.
     Your dPack is ready!
-    We will walk you through creating a 'dpack.json' file.
-    (You can skip dpack.json and get started now.)
-    Learn more about dpack.json: ${chalk.blue(`http://docs.dpack.io/metadata`)}
+    We will walk you through creating a 'dweb.json' file.
+    (You can skip dweb.json and get started now.)
+    Learn more about dweb.json: ${chalk.blue(`http://docs.dpack.io/metadata`)}
     ${chalk.dim('Ctrl+C to exit at any time')}
   `)
   var outro
@@ -49,26 +49,26 @@ function create (opts) {
   opts.errorIfExists = true
 
   console.log(welcome)
-  DPack(opts.dir, opts, function (err, dpack) {
-    if (err && err.name === 'ExistsError') return exitErr('\nVault already exists.\nYou can use `dpack pull` to update.')
+  DWeb(opts.dir, opts, function (err, dweb) {
+    if (err && err.name === 'ExistsError') return exitErr('\nVault already exists.\nYou can use `dweb pull` to update.')
     if (err) return exitErr(err)
 
     outro = result(`
-      Created empty dPack in ${dpack.path}/.dpack
+      Created empty dPack in ${dweb.path}/.dweb
       Now you can add files and distribute:
-      * Run ${chalk.green(`dpack dist`)} to create metadata and pull.
+      * Run ${chalk.green(`dweb dist`)} to create metadata and pull.
       * Copy the unique dWeb link and securely share it.
-      ${chalk.blue(`dweb://${dpack.key.toString('hex')}`)}
+      ${chalk.blue(`dweb://${dweb.key.toString('hex')}`)}
     `)
 
     if (opts.yes) return done()
 
     console.log(intro)
-    var dpackjson = DPackJson(dpack.vault, { file: path.join(opts.dir, 'dpack.json') })
-    fs.readFile(path.join(opts.dir, 'dpack.json'), 'utf-8', function (err, data) {
+    var dwebjson = DWebJson(dweb.vault, { file: path.join(opts.dir, 'dweb.json') })
+    fs.readFile(path.join(opts.dir, 'dweb.json'), 'utf-8', function (err, data) {
       if (err || !data) return doPrompt()
       data = JSON.parse(data)
-      debug('read existing dpack.json data', data)
+      debug('read existing dweb.json data', data)
       doPrompt(data)
     })
 
@@ -95,12 +95,12 @@ function create (opts) {
       prompt.message = '' // chalk.green('> ')
       // prompt.delimiter = ''
       prompt.start()
-      prompt.get(schema, writeDPackJson)
+      prompt.get(schema, writeDWebJson)
 
-      function writeDPackJson (err, results) {
+      function writeDWebJson (err, results) {
         if (err) return exitErr(err) // prompt error
         if (!results.title && !results.description) return done()
-        dpackjson.create(results, done)
+        dwebjson.create(results, done)
       }
     }
 

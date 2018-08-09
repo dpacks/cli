@@ -19,10 +19,10 @@ module.exports = {
 function unpublish (opts) {
   var prompt = require('prompt')
   var path = require('path')
-  var DPack = require('@dpack/core')
+  var DWeb = require('@dpack/core')
   var output = require('@dpack/logger/result')
   var chalk = require('chalk')
-  var DPackJson = require('@dpack/metadata')
+  var DWebJson = require('@dpack/metadata')
   var Repository = require('../repository')
 
   if (opts._[0]) opts.server = opts._[0]
@@ -41,13 +41,13 @@ function unpublish (opts) {
   }
 
   opts.createIfMissing = false // unpublish dont try to create new one
-  DPack(opts.dir, opts, function (err, dpack) {
+  DWeb(opts.dir, opts, function (err, dweb) {
     if (err) return exitErr(err)
     // TODO better error msg for non-existing vault
-    if (!dpack.writable) return exitErr('Sorry, you can only publish a dPack that you created.')
+    if (!dweb.writable) return exitErr('Sorry, you can only publish a dPack that you created.')
 
-    var dpackjson = DPackJson(dpack.vault, {file: path.join(dpack.path, 'dpack.json')})
-    dpackjson.read(function (err, data) {
+    var dwebjson = DWebJson(dweb.vault, {file: path.join(dweb.path, 'dweb.json')})
+    dwebjson.read(function (err, data) {
       if (err) return exitErr(err)
       if (!data.name) return exitErr('Try `dpack unpublish <name>` with this dPack, we are having trouble reading it.')
       confirm(data.name)
@@ -73,7 +73,7 @@ function unpublish (opts) {
   }
 
   function makeRequest (name) {
-    client.dpacks.delete({name: name}, function (err, resp, body) {
+    client.dwebs.delete({name: name}, function (err, resp, body) {
       if (err && err.message) exitErr(err.message)
       else if (err) exitErr(err.toString())
       if (body.statusCode === 400) return exitErr(new Error(body.message))

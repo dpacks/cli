@@ -51,7 +51,7 @@ function install {
   echo "Downloading $URL"
 	bash -c "$GET $URL" > $DPACK_DIR/tmp.zip || fail "download failed"
 	unzip -o -qq $DPACK_DIR/tmp.zip || fail "unzip failed"
-  BIN="$DPACK_DIR/$RELEASE/dpack"
+  BIN="$DPACK_DIR/$RELEASE/dweb"
 	chmod +x $BIN || fail "chmod +x failed"
 	cleanup
   printf "dPack $LATEST has been downloaded successfully. Execute it with this command:\n\n${BIN}\n\nAdd it to your PATH with this command (add this to .bash_profile/.bashrc):\n\nexport PATH=\"\$PATH:$DPACK_DIR/$RELEASE\"\n"

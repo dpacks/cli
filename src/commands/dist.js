@@ -5,7 +5,7 @@ module.exports = {
     'Create and distribute a dPack',
     'Create a dPack, import files, and distribute to the dWeb network.',
     '',
-    'Usage: dpack dist'
+    'Usage: dweb dist'
   ].join('\n'),
   options: [
     {
@@ -30,7 +30,7 @@ module.exports = {
 }
 
 function dist (opts) {
-  var DPack = require('@dpack/core')
+  var DWeb = require('@dpack/core')
   var dPackLogger = require('@dpack/logger')
   var vaultUI = require('../ui/vault')
   var trackVault = require('./lib/vault')
@@ -51,13 +51,13 @@ function dist (opts) {
   dPackEntry.use(function (state, bus) {
     state.opts = opts
 
-    DPack(opts.dir, opts, function (err, dpack) {
-      if (err && err.name === 'IncompatibleError') return bus.emit('exit:warn', 'Directory contains incompatible dPack metadata. Please remove your old .dpack folder (rm -rf .dpack)')
+    DWeb(opts.dir, opts, function (err, dweb) {
+      if (err && err.name === 'IncompatibleError') return bus.emit('exit:warn', 'Directory contains incompatible dPack metadata. Please remove your old .dweb folder (rm -rf .dweb)')
       else if (err) return bus.emit('exit:error', err)
-      if (!dpack.writable && !opts.shortcut) return bus.emit('exit:warn', 'Vault not writable, cannot use dist. Please use sync to resume download.')
+      if (!dweb.writable && !opts.shortcut) return bus.emit('exit:warn', 'Vault not writable, cannot use dist. Please use sync to resume download.')
 
-      state.dpack = dpack
-      bus.emit('dpack')
+      state.dweb = dweb
+      bus.emit('dweb')
       bus.emit('render')
     })
   })

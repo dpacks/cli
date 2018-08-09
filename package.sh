@@ -12,9 +12,9 @@ mkdir builds/dpack-$VERSION-linux-x64
 mkdir builds/dpack-$VERSION-macos-x64
 mkdir builds/dpack-$VERSION-win-x64
 
-mv builds/dpack-linux builds/dpack-$VERSION-linux-x64/dpack
-mv builds/dpack-macos builds/dpack-$VERSION-macos-x64/dpack
-mv builds/dpack-win.exe builds/dpack-$VERSION-win-x64/dpack.exe
+mv builds/dpack-linux builds/dpack-$VERSION-linux-x64/dweb
+mv builds/dpack-macos builds/dpack-$VERSION-macos-x64/dweb
+mv builds/dpack-win.exe builds/dpack-$VERSION-win-x64/dweb.exe
 
 cp node_modules/utp-native/prebuilds/linux-x64/$NODE_ABI.node builds/dpack-$VERSION-linux-x64/
 cp node_modules/utp-native/prebuilds/darwin-x64/$NODE_ABI.node builds/dpack-$VERSION-macos-x64/

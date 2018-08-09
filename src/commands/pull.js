@@ -4,7 +4,7 @@ module.exports = {
   help: [
     'Pull updates from a forked dPack vault',
     '',
-    'Usage: dpack pull'
+    'Usage: dweb pull'
   ].join('\n'),
   options: [
     {
@@ -16,7 +16,7 @@ module.exports = {
     {
       name: 'selectFromFile',
       boolean: false,
-      default: '.dpackdownload',
+      default: '.dwebdownload',
       help: 'Sync only the list of selected files or directories in the given file.',
       abbr: 'select-from-file'
     },
@@ -37,7 +37,7 @@ module.exports = {
 }
 
 function pull (opts) {
-  var DPack = require('@dpack/core')
+  var DWeb = require('@dpack/core')
   var dPackLogger = require('@dpack/logger')
   var vaultUI = require('../ui/vault')
   var trackVault = require('./lib/vault')
@@ -47,7 +47,7 @@ function pull (opts) {
   var parseArgs = require('../parse-args')
   var debug = require('debug')('dpack')
 
-  debug('dpack pull')
+  debug('dweb pull')
   if (!opts.dir) {
     var parsed = parseArgs(opts)
     opts.key = parsed.key
@@ -68,13 +68,13 @@ function pull (opts) {
     state.opts = opts
     selectiveSync(state, opts)
 
-    DPack(opts.dir, opts, function (err, dpack) {
+    DWeb(opts.dir, opts, function (err, dweb) {
       if (err && err.name === 'MissingError') return bus.emit('exit:warn', 'No existing vault in this directory. Use fork to download a new vault.')
       if (err) return bus.emit('exit:error', err)
-      if (dpack.writable) return bus.emit('exit:warn', 'Vault is writable. Cannot pull your own vault.')
+      if (dweb.writable) return bus.emit('exit:warn', 'Vault is writable. Cannot pull your own vault.')
 
-      state.dpack = dpack
-      bus.emit('dpack')
+      state.dweb = dweb
+      bus.emit('dweb')
       bus.emit('render')
     })
   })

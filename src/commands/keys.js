@@ -6,9 +6,9 @@ module.exports = {
     '',
     'Usage:',
     '',
-    '  dpack keys              view dPack key and revelation key',
-    '  dpack keys export       export dPack secret key',
-    '  dpack keys import       import dPack secret key to make a dPack writable',
+    '  dweb keys              view dWeb key and revelation key',
+    '  dweb keys export       export dWeb secret key',
+    '  dweb keys import       import dWeb secret key to make a dPack writable',
     ''
   ].join('\n'),
   options: [
@@ -22,32 +22,32 @@ module.exports = {
 }
 
 function keys (opts) {
-  var DPack = require('@dpack/core')
+  var DWeb = require('@dpack/core')
   var parseArgs = require('../parse-args')
   var debug = require('debug')('dpack')
 
-  debug('dpack keys')
+  debug('dweb keys')
   if (!opts.dir) {
     opts.dir = parseArgs(opts).dir || process.cwd()
   }
   opts.createIfMissing = false // keys must always be a resumed vault
 
-  DPack(opts.dir, opts, function (err, dpack) {
-    if (err && err.name === 'MissingError') return exit('Sorry, could not find a dpack in this directory.')
+  DWeb(opts.dir, opts, function (err, dweb) {
+    if (err && err.name === 'MissingError') return exit('Sorry, could not find a dPack in this directory.')
     if (err) return exit(err)
-    run(dpack, opts)
+    run(dweb, opts)
   })
 }
 
-function run (dpack, opts) {
+function run (dweb, opts) {
   var subcommand = require('subcommand')
   var prompt = require('prompt')
 
   var config = {
     root: {
       command: function () {
-        console.log(`dweb://${dpack.key.toString('hex')}`)
-        if (opts.revelation) console.log(`Revelation key: ${dpack.vault.revelationKey.toString('hex')}`)
+        console.log(`dweb://${dweb.key.toString('hex')}`)
+        if (opts.revelation) console.log(`Revelation key: ${dweb.vault.revelationKey.toString('hex')}`)
         process.exit()
       }
     },
@@ -55,14 +55,14 @@ function run (dpack, opts) {
       {
         name: 'export',
         command: function foo (args) {
-          if (!dpack.writable) return exit('DPack must be writable to export.')
-          console.log(dpack.vault.metadata.secretKey.toString('hex'))
+          if (!dweb.writable) return exit('dPack must be writable to export.')
+          console.log(dweb.vault.metadata.secretKey.toString('hex'))
         }
       },
       {
         name: 'import',
         command: function bar (args) {
-          if (dpack.writable) return exit('DPack is already writable.')
+          if (dweb.writable) return exit('dPack is already writable.')
           importKey()
         }
       }
@@ -78,10 +78,10 @@ function run (dpack, opts) {
       properties: {
         key: {
           pattern: /^[a-z0-9]{128}$/,
-          message: 'Use `dpack keys export` to get the secret key (128 character hash).',
+          message: 'Use `dweb keys export` to get the secret key (128 character hash).',
           hidden: true,
           required: true,
-          description: 'dpack secret key'
+          description: 'dweb secret key'
         }
       }
     }
@@ -92,12 +92,12 @@ function run (dpack, opts) {
       var secretKey = data.key
       if (typeof secretKey === 'string') secretKey = Buffer.from(secretKey, 'hex')
       // Automatically writes the metadata.ogd file
-      dpack.vault.metadata._storage.secretKey.write(0, secretKey, done)
+      dweb.vault.metadata._storage.secretKey.write(0, secretKey, done)
     })
 
     function done (err) {
       if (err) return exit(err)
-      console.log('Successful import. DPack is now writable.')
+      console.log('Successful import. dPack is now writable.')
       exit()
     }
   }

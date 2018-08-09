@@ -6,13 +6,13 @@ var chalk = require('chalk')
 module.exports = statusUI
 
 function statusUI (state) {
-  if (!state.dpack) return 'Starting dPack program...'
+  if (!state.dweb) return 'Starting dPack program...'
 
-  var dpack = state.dpack
-  var stats = dpack.stats.get()
+  var dweb = state.dweb
+  var stats = dweb.stats.get()
 
   return result(`
-    ${chalk.blue('dweb://' + stringKey(dpack.key))}
+    ${chalk.blue('dweb://' + stringKey(dweb.key))}
     ${stats.files} files (${pretty(stats.byteLength)})
     Version: ${chalk.bold(stats.version)}
   `)

@@ -4,12 +4,12 @@ var rimraf = require('rimraf')
 var request = require('request')
 var spawn = require('./helpers/spawn.js')
 
-var dpack = path.resolve(path.join(__dirname, '..', 'bin', 'cli.js'))
+var dweb = path.resolve(path.join(__dirname, '..', 'bin', 'cli.js'))
 var fixtures = path.join(__dirname, 'fixtures')
 
 test('http - dist with http', function (t) {
-  rimraf.sync(path.join(fixtures, '.dpack'))
-  var cmd = dpack + ' dist --http'
+  rimraf.sync(path.join(fixtures, '.dweb'))
+  var cmd = dweb + ' dist --http'
   var st = spawn(t, cmd, {cwd: fixtures})
 
   st.stdout.match(function (output) {
@@ -37,8 +37,8 @@ test('http - dist with http', function (t) {
 })
 
 test('http - dist with http other port', function (t) {
-  rimraf.sync(path.join(fixtures, '.dpack'))
-  var cmd = dpack + ' dist --http 3333'
+  rimraf.sync(path.join(fixtures, '.dweb'))
+  var cmd = dweb + ' dist --http 3333'
   var st = spawn(t, cmd, {cwd: fixtures})
 
   st.stdout.match(function (output) {

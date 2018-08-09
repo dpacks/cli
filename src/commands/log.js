@@ -4,7 +4,7 @@ module.exports = {
   help: [
     'View history and information about a dPack',
     '',
-    'Usage: dpack log [dir|link]'
+    'Usage: dweb log [dir|link]'
   ].join('\n'),
   options: [
     {

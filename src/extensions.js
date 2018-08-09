@@ -8,13 +8,13 @@ function runExtension (opts) {
   var extName = opts._.shift()
   trySpawn(function () {
     console.error('We could not run the extension. Please make sure it is installed:')
-    console.error(`npm install -g dpack-${extName}`)
+    console.error(`npm install -g dweb-${extName}`)
     process.exit(1)
   })
 
   function trySpawn (cb) {
     var spawn = require('child_process').spawn
-    var child = spawn('dpack-' + extName, process.argv.splice(3))
+    var child = spawn('dweb-' + extName, process.argv.splice(3))
     child.stdout.pipe(process.stdout)
     child.stderr.pipe(process.stderr)
     child.on('error', function (err) {

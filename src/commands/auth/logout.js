@@ -3,7 +3,7 @@ module.exports = {
   command: logout,
   help: [
     'Logout from current dPack Repository server',
-    'Usage: dpack logout [<repository>]',
+    'Usage: dweb logout [<repository>]',
     '',
     'Specify server if you want to from non-active other server.',
     'Check active server with `dpack whoami`.'

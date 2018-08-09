@@ -2,17 +2,17 @@ module.exports = {
   name: 'sync',
   command: sync,
   help: [
-    'Sync a DPack vault with the dWeb network',
+    'Sync a dPack vault with the distributed web',
     'Watch and import file changes (if vault is writable)',
     '',
-    'Usage: dpack sync'
+    'Usage: dweb sync'
   ].join('\n'),
   options: [
     {
       name: 'import',
       boolean: true,
       default: true,
-      help: 'Import files from the directory to the database (DPack Writable).'
+      help: 'Import files from the directory to the database (dPack Writable).'
     },
     {
       name: 'ignoreHidden',
@@ -23,7 +23,7 @@ module.exports = {
     {
       name: 'selectFromFile',
       boolean: false,
-      default: '.dpackdownload',
+      default: '.dwebdownload',
       help: 'Sync only the list of selected files or directories in the given file.',
       abbr: 'select-from-file'
     },
@@ -44,13 +44,13 @@ module.exports = {
       boolean: true,
       default: false,
       abbr: 'k',
-      help: 'Print out the dPack key (DPack Not Writable).'
+      help: 'Print out the dPack key (dPack Not Writable).'
     }
   ]
 }
 
 function sync (opts) {
-  var DPack = require('@dpack/core')
+  var DWeb = require('@dpack/core')
   var dPackLogger = require('@dpack/logger')
   var vaultUI = require('../ui/vault')
   var selectiveSync = require('./lib/selective-sync')
@@ -59,7 +59,7 @@ function sync (opts) {
   var parseArgs = require('../parse-args')
   var debug = require('debug')('dpack')
 
-  debug('dpack sync')
+  debug('dweb sync')
   var parsed = parseArgs(opts)
   opts.key = parsed.key
   opts.dir = parsed.dir || process.cwd()
@@ -75,12 +75,12 @@ function sync (opts) {
   dPackEntry.use(function (state, bus) {
     state.opts = opts
     selectiveSync(state, opts)
-    DPack(opts.dir, opts, function (err, dpack) {
+    DWeb(opts.dir, opts, function (err, dweb) {
       if (err && err.name === 'MissingError') return bus.emit('exit:warn', 'No existing vault in this directory.')
       if (err) return bus.emit('exit:error', err)
 
-      state.dpack = dpack
-      bus.emit('dpack')
+      state.dweb = dweb
+      bus.emit('dweb')
       bus.emit('render')
     })
   })

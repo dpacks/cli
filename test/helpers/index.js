@@ -5,15 +5,15 @@ var mkdirp = require('mkdirp')
 var rimraf = require('rimraf')
 var encoding = require('@dwebs/codec')
 var recursiveReadSync = require('recursive-readdir-sync')
-var DPack = require('@dpack/core')
+var DWeb = require('@dpack/core')
 var ram = require('random-access-memory')
 var ddatabase = require('@ddatabase/core')
 var flock = require('@flockcore/core')
 
-module.exports.matchLink = matchDPackLink
+module.exports.matchLink = matchDWebLink
 module.exports.isDir = isDir
 module.exports.testFolder = newTestFolder
-module.exports.dpackJson = dpackJson
+module.exports.dwebJson = dwebJson
 module.exports.shareFixtures = shareFixtures
 module.exports.shareFeed = shareFeed
 module.exports.fileList = fileList
@@ -23,15 +23,15 @@ function shareFixtures (opts, cb) {
   opts = opts || {}
   var fixtures = path.join(__dirname, '..', 'fixtures')
   try { fs.unlinkSync(path.join(fixtures, '.DS_Store')) } catch (e) { /* ignore error */ }
-  if (opts.resume !== true) rimraf.sync(path.join(fixtures, '.dpack'))
-  DPack(fixtures, {}, function (err, dpack) {
+  if (opts.resume !== true) rimraf.sync(path.join(fixtures, '.dweb'))
+  DWeb(fixtures, {}, function (err, dweb) {
     if (err) throw err
-    dpack.trackStats()
-    dpack.joinNetwork()
-    if (opts.import === false) return cb(null, dpack)
-    dpack.importFiles({watch: false}, function (err) {
+    dweb.trackStats()
+    dweb.joinNetwork()
+    if (opts.import === false) return cb(null, dweb)
+    dweb.importFiles({watch: false}, function (err) {
       if (err) throw err
-      cb(null, dpack)
+      cb(null, dweb)
     })
   })
 }
@@ -45,13 +45,13 @@ function fileList (dir) {
 }
 
 function newTestFolder () {
-  var tmpdir = path.join(os.tmpdir(), 'dpack-download-folder')
+  var tmpdir = path.join(os.tmpdir(), 'dweb-download-folder')
   rimraf.sync(tmpdir)
   mkdirp.sync(tmpdir)
   return tmpdir
 }
 
-function matchDPackLink (str) {
+function matchDWebLink (str) {
   var match = str.match(/[A-Za-z0-9]{64}/)
   if (!match) return false
   var key
@@ -63,9 +63,9 @@ function matchDPackLink (str) {
   return key
 }
 
-function dpackJson (filepath) {
+function dwebJson (filepath) {
   try {
-    return JSON.parse(fs.readFileSync(path.join(filepath, 'dpack.json')))
+    return JSON.parse(fs.readFileSync(path.join(filepath, 'dweb.json')))
   } catch (e) {
     return {}
   }

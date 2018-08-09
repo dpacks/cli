@@ -12,7 +12,7 @@ function networkUI (state) {
   var downBar = makeBar()
 
   if (download.nsync) {
-    if (state.opts.exit && state.dpack.vault.version === 0) {
+    if (state.opts.exit && state.dweb.vault.version === 0) {
       return 'dPack synced with the dWeb. There is no content in this vault.'
     }
     if (state.opts.exit && download.modified) {

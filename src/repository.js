@@ -5,7 +5,7 @@ module.exports = function (opts) {
   var dwidOpts = {
     server: opts.server,
     config: {
-      filepath: opts.config // defaults to ~/.dpackrc via @dpacks/repository
+      filepath: opts.config // defaults to ~/.dwebrc via @dpacks/repository
     }
   }
   var defaults = {

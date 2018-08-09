@@ -3,7 +3,7 @@ module.exports = {
   command: whoami,
   help: [
     'Get login information',
-    'Usage: dpack login [<repository>]',
+    'Usage: dweb login [<repository>]',
     '',
     'Get information for active repository or specify your repository.'
   ].join('\n'),
@@ -36,7 +36,7 @@ function whoami (opts) {
     Username: ${login.username}
     ---
     Change your repository by logging in again:
-    ${chalk.dim.green('dpack login <repository-url>')}
+    ${chalk.dim.green('dweb login <repository-url>')}
   `))
   process.exit(0)
 }

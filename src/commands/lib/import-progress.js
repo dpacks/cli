@@ -3,11 +3,11 @@ var xtend = Object.assign
 module.exports = trackImport
 
 function trackImport (state, bus) {
-  if (state.dpack) return track()
-  bus.once('dpack', track)
+  if (state.dweb) return track()
+  bus.once('dweb', track)
 
   function track () {
-    var progress = state.dpack.importFiles(state.opts, function (err) {
+    var progress = state.dweb.importFiles(state.opts, function (err) {
       if (err) return bus.emit('exit:error', err)
       state.importer.fileImport = null
       state.exiting = true
@@ -19,7 +19,7 @@ function trackImport (state, bus) {
       liveImports: [],
       indexSpeed: progress.indexSpeed
     }, progress)
-    bus.emit('dpack:importer')
+    bus.emit('dweb:importer')
 
     var counting = setInterval(function () {
       // Update file count in progress counting (for big dirs)

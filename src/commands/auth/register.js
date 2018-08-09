@@ -3,7 +3,7 @@ module.exports = {
   command: register,
   help: [
     'Register with a public dPack Repository',
-    'Usage: dpack register [<repository>]',
+    'Usage: dweb register [<repository>]',
     '',
     'Register with dpacks.io or other repository to publish your dPacks.'
   ].join('\n'),
@@ -79,7 +79,7 @@ function register (opts) {
       console.log(output(`
         Created account on ${chalk.green(opts.server)}!
 
-        Login to start publishing: ${chalk.green(`dpack login`)}
+        Login to start publishing: ${chalk.green(`dweb login`)}
       `))
       process.exit(0)
     })

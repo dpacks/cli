@@ -7,8 +7,8 @@ var xtend = Object.assign
 module.exports = trackNetwork
 
 function trackNetwork (state, bus) {
-  if (state.dpack) return track()
-  bus.once('dpack', track)
+  if (state.dweb) return track()
+  bus.once('dweb', track)
 
   function track () {
     var opts = state.opts
@@ -22,11 +22,11 @@ function trackNetwork (state, bus) {
         }
       })
     }
-    var network = state.dpack.joinNetwork(opts, function () {
+    var network = state.dweb.joinNetwork(opts, function () {
       bus.emit('network:callback')
     })
     state.network = xtend(network, state.network)
-    bus.emit('dpack:network')
+    bus.emit('dweb:network')
 
     network.on('connection', function (conn, info) {
       bus.emit('render')
@@ -37,7 +37,7 @@ function trackNetwork (state, bus) {
 
     if (state.opts.sources) trackSources()
     if (state.stats) return trackSpeed()
-    bus.once('dpack:stats', trackSpeed)
+    bus.once('dweb:stats', trackSpeed)
 
     function trackSpeed () {
       setInterval(function () {
@@ -57,9 +57,9 @@ function trackNetwork (state, bus) {
 
           // TODO: how to get right peer from vault.content?
           // var remote = conn.feeds[1].remoteLength
-          // // state.dpack.vault.content.sources[0].feed.id.toString('hex')
+          // // state.dweb.vault.content.sources[0].feed.id.toString('hex')
           // if (!remote) return
-          // return remote / dpack.vault.content.length
+          // return remote / dweb.vault.content.length
         }
 
         conn.feeds.map(function (feed) {

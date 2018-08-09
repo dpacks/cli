@@ -3,7 +3,7 @@ module.exports = {
   command: login,
   help: [
     'Login to a dPack Repository server',
-    'Usage: dpack login [<repository>]',
+    'Usage: dweb login [<repository>]',
     '',
     'Publish your dPacks so other users can revelate them.',
     'Please register before trying to login.'
@@ -74,7 +74,7 @@ function login (opts) {
         Logged you in to ${chalk.green(opts.server)}!
 
         Now you can publish dPacks and distribute to the dWeb:
-        * Run ${chalk.green(`dpack publish`)} to publish a dPack!
+        * Run ${chalk.green(`dweb publish`)} to publish a dPack!
         * View & Distribute your dPacks at ${opts.server}
       `))
       process.exit(0)

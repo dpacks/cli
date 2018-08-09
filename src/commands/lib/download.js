@@ -8,7 +8,7 @@ function trackDownload (state, bus) {
   bus.once('vault:content', track)
 
   function track () {
-    var vault = state.dpack.vault
+    var vault = state.dweb.vault
 
     state.download = xtend({
       modified: false,
@@ -34,7 +34,7 @@ function trackDownload (state, bus) {
       state.download.nsync = true
       var shouldExit = (state.download.modified && state.opts.exit)
       if (shouldExit) return exit()
-      if (state.dpack.vault.version === 0) {
+      if (state.dweb.vault.version === 0) {
         // TODO: deal with this.
         // Sync sometimes fires early when it should wait for update.
       }

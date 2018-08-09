@@ -5,7 +5,7 @@ var debug = require('debug')('dpack')
 var usage = require('../src/usage')
 var pkg = require('../package.json')
 
-process.title = 'dpack'
+process.title = 'dweb'
 
 // Check node version to make sure we support
 var NODE_VERSION_SUPPORTED = 4
@@ -88,7 +88,7 @@ var config = {
 }
 
 if (debug.enabled) {
-  debug('dpack', pkg.version)
+  debug('dweb', pkg.version)
   debug('node', process.version)
 }
 
@@ -105,9 +105,9 @@ function alias (argv) {
 
 // CLI Shortcuts
 // Commands:
-//   dpack <dweb://key> [<dir>] - fork/sync a key
-//   dpack <dir> - create dpack + dist a directory
-//   dpack <extension>
+//   dweb <dweb://key> [<dir>] - fork/sync a key
+//   dweb <dir> - create dpack + dist a directory
+//   dweb <extension>
 function syncShorthand (opts) {
   if (!opts._.length) return usage(opts)
   debug('sync shortcut command')
@@ -116,7 +116,7 @@ function syncShorthand (opts) {
 
   // Download Key
   if (parsed.key) {
-    // dpack  <dweb://key> [<dir>] - fork/resume <link> in [dir]
+    // dweb  <dweb://key> [<dir>] - fork/resume <link> in [dir]
     debug('fork sync')
     opts.dir = parsed.dir || parsed.key // put in `process.cwd()/key` if no dir
     opts.exit = opts.exit || false
@@ -124,7 +124,7 @@ function syncShorthand (opts) {
   }
 
   // dWeb dir
-  // dpack <dir> - sync existing dpack in {dir}
+  // dweb <dir> - sync existing dpack in {dir}
   if (parsed.dir) {
     opts.shortcut = true
     debug('dist sync')

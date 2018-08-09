@@ -9,8 +9,8 @@ var serve = require('./serve-http')
 
 module.exports = function (state, bus) {
   state.warnings = state.warnings || []
-  bus.once('dpack', function () {
-    state.writable = state.dpack.writable
+  bus.once('dweb', function () {
+    state.writable = state.dweb.writable
     state.joinNetwork = !(state.joinNetwork === false)
 
     stats(state, bus)
@@ -21,8 +21,8 @@ module.exports = function (state, bus) {
     else if (state.opts.thin) selectiveSync(state, bus)
     else download(state, bus)
 
-    if (state.dpack.vault.content) return bus.emit('vault:content')
-    state.dpack.vault.once('content', function () {
+    if (state.dweb.vault.content) return bus.emit('vault:content')
+    state.dweb.vault.once('content', function () {
       bus.emit('vault:content')
     })
   })
@@ -33,7 +33,7 @@ module.exports = function (state, bus) {
 }
 
 function selectiveSync (state, bus) {
-  var vault = state.dpack.vault
+  var vault = state.dweb.vault
   debug('thin mode. downloading metadata')
   var emitter = new EventEmitter()
 
