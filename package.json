@@ -1,6 +1,6 @@
 {
   "name": "@dpack/cli",
-  "version": "0.3.2",
+  "version": "0.3.4",
   "description": "dPack is a distributed and decentralized package manager for the dWeb. Easily distribute dPacks across the Distributed Web (dWeb) while maintaining complete version control.",
   "contributors": [
     "Jared Rice Sr. <jared@dwebs.io>",
@@ -9,7 +9,7 @@
   "license": "BSD-3-Clause",
   "main": "index.js",
   "bin": {
-    "dpack": "bin/cli.js"
+    "dweb": "bin/cli.js"
   },
   "scripts": {
     "auth-server": "DEBUG=* node scripts/auth-server.js",
@@ -22,17 +22,17 @@
     "pkg": "pkg package.json -o builds/dpack"
   },
   "dependencies": {
-    "@dpack/core": "*",
-    "@dpack/drsatoshi": "*",
-    "@dpack/feed": "*",
-    "@dpack/logger": "*",
-    "@dpack/metadata": "*",
-    "@dpack/replogger": "*",
-    "@dpacks/repository": "*",
-    "@dwcore/channel": "*",
-    "@dwcore/netspeed": "*",
-    "@dwebs/codec": "*",
-    "@dwebs/resolve": "*",
+    "@dpack/core": "~2.0.1",
+    "@dpack/drsatoshi": "~0.3.3",
+    "@dpack/feed": "~0.1.9",
+    "@dpack/logger": "~0.1.8",
+    "@dpack/metadata": "~0.1.6",
+    "@dpack/replogger": "~0.1.1",
+    "@dpacks/repository": "~0.1.3",
+    "@dwcore/channel": "~0.1.1",
+    "@dwcore/netspeed": "~0.1.1",
+    "@dwebs/codec": "~0.1.6",
+    "@dwebs/resolve": "~0.1.5",
     "bytes": "^3.0.0",
     "chalk": "^2.0.0",
     "cli-truncate": "^1.0.0",
@@ -47,8 +47,8 @@
     "xtend": "^4.0.1"
   },
   "devDependencies": {
-    "@ddatabase/core": "*",
-    "@dpacks/api": "*",
+    "@ddatabase/core": "",
+    "@dpacks/api": "~0.2.3",
     "@flockcore/revelation": "*",
     "cross-zip-cli": "^1.0.0",
     "dependency-check": "^3.0.0",
